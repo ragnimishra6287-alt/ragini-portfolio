@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ragini OS 💻</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: black;
+            color: #00ff00;
+        }
+
+        #login, #desktop {
+            display: none;
+        }
+
+        #login {
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px;
+        }
+
+        #desktop {
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .icon {
+            display: inline-block;
+            margin: 20px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .window {
+            position: absolute;
+            top: 100px;
+            left: 100px;
+            background: black;
+            border: 1px solid #00ff00;
+            width: 300px;
+            display: none;
+        }
+
+        .titlebar {
+            background: #003300;
+            padding: 5px;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .content {
+            padding: 10px;
+        }
+
+        button {
+            background: black;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        #taskbar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: #003300;
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+        }
+
+        #clock {
+            color: white;
+        }
+
+        iframe {
+            width: 100%;
+            height: 150px;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- SOUND -->
+<audio id="clickSound" src="click.mp3"></audio>
+
+<!-- LOGIN -->
+<div id="login">
+    <h2>🔐 Login</h2>
+    <input type="text" id="user" placeholder="Username"><br>
+    <input type="password" id="pass" placeholder="Password"><br>
+    <button onclick="login()">Login</button>
+</div>
+
+<!-- DESKTOP -->
+<div id="desktop">
+    <h2>💻 Ragini OS</h2>
+
+    <div class="icon" onclick="openWindow('files')">📁<br>Files</div>
+    <div class="icon" onclick="openWindow('notes')">📝<br>Notes</div>
+    <div class="icon" onclick="openWindow('terminal')">💻<br>Terminal</div>
+    <div class="icon" onclick="openWindow('browser')">🌐<br>Browser</div>
+</div>
+
+<!-- WINDOWS -->
+
+<div id="browser" class="window">
+    <div class="titlebar" onmousedown="drag(event, this.parentElement)">
+        Browser 🌐 <button onclick="closeWin('browser')">X</button>
+    </div>
+    <div class="content">
+        <iframe src="https://example.com"></iframe>
+    </div>
+</div>
+
+<div id="files" class="window">
+    <div class="titlebar" onmousedown="drag(event, this.parentElement)">
+        Files 📁 <button onclick="closeWin('files')">X</button>
+    </div>
+    <div class="content">
+        <p>secret.txt</p>
+    </div>
+</div>
+
+<div id="notes" class="window">
+    <div class="titlebar" onmousedown="drag(event, this.parentElement)">
+        Notes 📝 <button onclick="closeWin('notes')">X</button>
+    </div>
+    <div class="content">
+        <textarea style="width:100%; height:80px;"></textarea>
+    </div>
+</div>
+
+<div id="terminal" class="window">
+    <div class="titlebar" onmousedown="drag(event, this.parentElement)">
+        Terminal 💻 <button onclick="closeWin('terminal')">X</button>
+    </div>
+    <div class="content">
+        <div id="output"></div>
+        > <input id="cmd" onkeydown="runCmd(event)">
+    </div>
+</div>
+
+<!-- TASKBAR -->
+<div id="taskbar">
+    <span>🟢 Ragini OS</span>
+    <span id="clock"></span>
+</div>
+
+<script>
+    document.getElementById("login").style.display = "block";
+
+    function playSound() {
+        document.getElementById("clickSound").play();
+    }
+
+    function login() {
+        playSound();
+        let u = document.getElementById("user").value;
+        let p = document.getElementById("pass").value;
+
+        if (u === "ragini" && p === "1234") {
+            document.getElementById("login").style.display = "none";
+            document.getElementById("desktop").style.display = "block";
+        } else {
+            alert("Wrong login ❌");
+        }
+    }
+
+    function openWindow(id) {
+        playSound();
+        document.getElementById(id).style.display = "block";
+    }
+
+    function closeWin(id) {
+        playSound();
+        document.getElementById(id).style.display = "none";
+    }
+
+    function runCmd(e) {
+        if (e.key === "Enter") {
+            let cmd = document.getElementById("cmd").value;
+            let out = document.getElementById("output");
+
+            out.innerHTML += "> " + cmd + "<br>";
+
+            if (cmd === "help") {
+                out.innerHTML += "Commands: help, hack, about<br>";
+            }
+            else if (cmd === "hack") {
+                out.innerHTML += "Hacking... 😎<br>";
+            }
+            else if (cmd === "about") {
+                out.innerHTML += "Ragini OS v4 🚀<br>";
+            }
+            else {
+                out.innerHTML += "Unknown command ❌<br>";
+            }
+
+            document.getElementById("cmd").value = "";
+        }
+    }
+
+    function drag(e, element) {
+        let offsetX = e.clientX - element.offsetLeft;
+        let offsetY = e.clientY - element.offsetTop;
+
+        function move(e) {
+            element.style.left = (e.clientX - offsetX) + "px";
+            element.style.top = (e.clientY - offsetY) + "px";
+        }
+
+        document.addEventListener("mousemove", move);
+
+        document.addEventListener("mouseup", function() {
+            document.removeEventListener("mousemove", move);
+        }, { once: true });
+    }
+
+    function updateClock() {
+        let now = new Date();
+        document.getElementById("clock").innerText =
+            now.toLocaleTimeString();
+    }
+
+    setInterval(updateClock, 1000);
+</script>
+
+</body>
+</html>
